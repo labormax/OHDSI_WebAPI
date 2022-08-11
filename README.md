@@ -58,6 +58,25 @@ Acceptable values are `true` and `false`
 
 Instructions can be found at [webapi-component-geospatial](https://github.com/OHDSI/webapi-component-geospatial)
 
+## IRIS support
+
+In order to run Atlas through your IRIS OMOP database:
+1. Clone repositories 
+- OHDSI_IRIS_WebAPI
+- OHDSI_IRIS_PostgreSQL
+- OHDSI_IRIS_Achilles
+- OHDSI_IRIS_Atlas
+2. Run Achilles SQL scripts on your database in IRIS terminal:
+- do $SYSTEM.SQL.Schema.ImportDDL("OHDSI_IRIS_Achilles/ddlAchillesMySQL/01-prepare-for-webapi.sql",,"MySQL")
+- do $SYSTEM.SQL.Schema.ImportDDL("OHDSI_IRIS_Achilles/ddlAchillesMySQL/02-achilles.sql",,"MySQL")
+3. Configure your IRIS server path and credentials in OHDSI_WebAPI/src/main/resources-iris/db/migration/postgresql/V9.9.9__artificial_dataset.sql
+   (Please note that if your IRIS server is on local PC you should address it as host.docker.internal)
+4. From OHDSI_IRIS_WebAPI folder run:
+- docker-compose build
+- docker-compose up
+  Building and starting may take long time depending on the performance of host computer
+5. Atlas will be available here http://127.0.0.1:8081/atlas/
+
 ## Testing
 
 It was chosen to use embedded PG instead of H2 for unit tests since H2 doesn't support window functions, `md5` function, HEX to BIT conversion, `setval`, `set datestyle`, CTAS + CTE.

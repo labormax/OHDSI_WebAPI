@@ -1,0 +1,60 @@
+version: '3.6'
+services:
+    atlas:
+        container_name: atlas
+        build:
+            context: ../OHDSI_IRIS_Achilles
+            dockerfile: Dockerfile-iris
+        restart: unless-stopped
+        environment:
+            WEBAPI_URL: http://127.0.0.1:8080/WebAPI/
+        expose:
+            - 80
+        ports:
+            - 8081:80
+        #links:
+        #    - webapi:webapi
+        networks:
+            - psql-pgql
+        
+        depends_on:
+            - webapi
+            
+          
+    webapi:
+        container_name: webapi
+        build:
+            context: ../OHDSI_IRIS_WebAPI
+            dockerfile: Dockerfile-iris
+        restart: unless-stopped
+        expose:
+            - 8080
+        ports:
+            - 8080:8080
+        depends_on:
+            - postgresql
+        networks:
+          - psql-pgql
+        extra_hosts:
+          - "host.docker.internal:host-gateway"
+      
+    postgresql:
+        container_name: postgresql
+        restart: unless-stopped
+        build:
+          context: ../OHDSI_IRIS_PostgreSQL
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: 1234  # To be moved to environment file
+            POSTGRES_DATABASE: omop
+            POSTGRES_HOST_AUTH_METHOD: md5
+            POSTGRES_PASSWORD_ENCRYPTION: md5
+        expose:
+          - 5432
+        ports:
+          - 5432:5432
+        networks:
+          - psql-pgql
+          
+networks:
+    psql-pgql:

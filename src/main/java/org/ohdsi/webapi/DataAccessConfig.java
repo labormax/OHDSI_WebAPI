@@ -82,7 +82,11 @@ public class DataAccessConfig {
         //note autocommit defaults vary across vendors. use provided @Autowired TransactionTemplate
 
         String[] supportedDrivers;
+        if (this.env.getProperty("maven.profile", "").equals("webapi-iris")) {
+            supportedDrivers = new String[]{"org.postgresql.Driver", "com.intersystems.jdbc.IRISDriver"};
+        } else {
         supportedDrivers = new String[]{"org.postgresql.Driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver", "oracle.jdbc.driver.OracleDriver", "com.amazon.redshift.jdbc.Driver", "com.cloudera.impala.jdbc.Driver", "net.starschema.clouddb.jdbc.BQDriver", "org.netezza.Driver", "com.simba.googlebigquery.jdbc42.Driver", "org.apache.hive.jdbc.HiveDriver", "com.simba.spark.jdbc.Driver"};
+        }
 
         for (String driverName : supportedDrivers) {
             try {
